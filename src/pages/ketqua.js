@@ -1,18 +1,36 @@
 import React, {useState} from 'react'
-import {Table, Pagination, Container} from 'react-bootstrap';
+import {Table, Pagination, Container,Row, Col, Alert, InputGroup} from 'react-bootstrap';
 import Search from '../components/Search';
 
 const Ketqua = () => {
 
   const [listStudents,setListStudents] = useState([])
+  const [msgError, setMsgError] = useState('');
 
   const handleCallback = (childData) => {
-    setListStudents(childData.listStudents)
+    if (childData.success === true)
+    {
+      setListStudents(childData.listStudents)
+      setMsgError('')
+    }
+    else
+    {
+      setMsgError(childData.msg)
+    }
   }
 
   return (
     <>
-      <Search parentCallback={handleCallback}/>
+      <Container fluid>
+        <Row>
+          <Search parentCallback={handleCallback}/> 
+          <Col sm={5}>
+            <InputGroup className="mb-3 mt-3">
+              <Alert show={msgError !== ''} className="pt-2 pb-2" variant="danger">{msgError}</Alert>
+            </InputGroup>
+          </Col>
+        </Row>
+      </Container>
       <Container style={{height: '500px'}} fluid>
         <Table striped hover bordered responsive className='mb-0' style={{maxHeight: '500px'}}>
           <thead>
