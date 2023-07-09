@@ -11,11 +11,12 @@ import {
   TableContainer, 
   Table, TableBody,
   TableRow, TableCell,
-  Snackbar } from '@mui/material';
+  Snackbar, Checkbox } from '@mui/material';
 // sections
 import { AppSearch } from '../sections/@dashboard/app';
 // component
 import Scrollbar from '../components/scrollbar';
+
 // ----------------------------------------------------------------------
 
 export default function AttendancePage() {
@@ -25,6 +26,23 @@ export default function AttendancePage() {
     const [currentCode, setCurentCode] = useState('');
     const [errorMsg, seterrorMsg] = useState('');
     const [open, setOpen] = useState(false);
+    const [currentDate] = useState(new Date().toLocaleDateString())
+    const [selected, setSelected] = useState([]);
+
+    const handleClick = (mssv) => {
+      const selectedIndex = selected.indexOf(mssv);
+      let newSelected = [];
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, mssv);
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1));
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1));
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      }
+      setSelected(newSelected);
+    };
 
     const showMessage = (msg) => {
       seterrorMsg(msg)
@@ -51,8 +69,8 @@ export default function AttendancePage() {
             {
               seterrorMsg('')
               const student = data.data
-              if (!itemsList.some(s => s.mssv === student.mssv))
-                setItemsList([...itemsList, student])
+              if (!selected.some(s => s === student.mssv))
+                handleClick(student.mssv)
               else
               {
                 showMessage(`Student ${student.name} attended.`)
@@ -71,27 +89,29 @@ export default function AttendancePage() {
 
     const handleSubmitAttend = () => {}
 
+    const refreshPage = (list) => {
+      if (list && list.length > 0) {
+        setItemsList(list)
+        setSelected([])
+      }
+    }
+
     return (
       <>
         <Helmet>
           <title> Attendance | Minimal UI </title>
         </Helmet>
-  
+        
         <Container maxWidth="xl">
-          <Typography variant="h4" sx={{ mb: 5 }}>
+          <Typography variant="h4" sx={{ mb: 2 }}>
             Attendance
           </Typography>
-
+          <AppSearch setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Card>
-                <AppSearch setCurentCode={setCurentCode} showMessage={showMessage}/> 
                 <Box sx={{ p: 1 }} dir="ltr">
-                  {
-                    camera 
-                    ? <StyledProductImg alt='camera-on' src='http://localhost:5000/video'/>
-                    : <StyledProductImg alt='camera-off' src={`/assets/images/camera-notload.jpeg`}/>
-                  }
+                    <StyledProductImg alt='camera-on' src={camera ? 'http://localhost:5000/video' :`/assets/images/camera-notload.jpeg` }/>
                 </Box>
 
                 <Box sx={{ m: 2, mt: 1, textAlign: 'center'}} dir="ltr">
@@ -103,21 +123,32 @@ export default function AttendancePage() {
   
             <Grid item xs={12} md={6} lg={4}>
               <Card >
-                <CardHeader title='List Students Attended'/>
+                <CardHeader title={
+                  <Typography noWrap variant="h6" component="h4">
+                    List Attended - {currentDate}
+                  </Typography>
+                }/>
                 <Scrollbar sx={{ minHeight: 380, maxHeight: 380}}>
                   <TableContainer>
                     <Table>
                       <TableBody>
                         {
                           itemsList.map((item, index) => {
-                            const { mssv, name } = item;
+                            const { mssv, name, date } = item;
+                            const selectedUser = selected.indexOf(mssv) !== -1;
 
                             return (
-                              <TableRow hover key={index} tabIndex={-1}>
+                              <TableRow hover key={index} tabIndex={-1} role="checkbox" selected={selectedUser}>
                                 <TableCell component="th" scope="row">
                                   <Typography variant="subtitle2" noWrap>
                                     {mssv} - {name}
                                   </Typography>
+                                </TableCell>
+
+                                <TableCell align="left">{date}</TableCell>    
+
+                                <TableCell padding="checkbox">
+                                  <Checkbox checked={selectedUser} onChange={() => handleClick( mssv)} />
                                 </TableCell>
                               </TableRow>
                             )

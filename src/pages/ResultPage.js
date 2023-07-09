@@ -19,6 +19,7 @@ import {
 // components
 import Label from '../components/label';
 import Scrollbar from '../components/scrollbar';
+import useToken from '../components/useToken';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import { AppSearch } from '../sections/@dashboard/app';
@@ -65,6 +66,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function ResultPage() {
+
+  const { token } = useToken()
 
   const [page, setPage] = useState(0);
 
@@ -124,6 +127,114 @@ export default function ResultPage() {
     setOpen(false);
   };
 
+  if (token.account.role === 'teacher')
+  {
+    return (
+      <>
+        <Helmet>
+          <title> Result of Attandance | Minimal UI </title>
+        </Helmet>
+  
+        <Container>
+          <Typography variant="h4" sx={{ mb: 2 }} gutterBottom>
+            Result of Attandance
+          </Typography>
+  
+          <AppSearch setListStudents={setListStudents} refreshPage={refreshPage} showMessage={showMessage}/> 
+          
+          <Card>
+            <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
+  
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    onRequestSort={handleRequestSort}
+                  />
+                  <TableBody>
+                    {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                      const { mssv, name, present, absence, status } = row;
+  
+                      return (
+                        <TableRow hover key={mssv} tabIndex={-1}>
+  
+                          <TableCell align="left">{mssv}</TableCell>                        
+  
+                          <TableCell component="th" scope="row">
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              <Typography variant="subtitle2" noWrap>
+                                {name}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+  
+                          <TableCell align="left">{present}</TableCell>    
+                          <TableCell align="left">{absence}</TableCell>    
+  
+                          <TableCell align="left">
+                            <Label color={(status === 'Ban' && 'error') || (status=== 'Warning' && 'warning') || 'success'}>{sentenceCase(status)}</Label>
+                          </TableCell>
+  
+                        </TableRow>
+                      );
+                    })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+  
+                  {isNotFound && (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <Paper
+                            sx={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <Typography variant="h6" paragraph>
+                              Not found
+                            </Typography>
+  
+                            <Typography variant="body2">
+                              No results found for &nbsp;
+                              <strong>&quot;{filterName}&quot;</strong>.
+                              <br /> Try checking for typos or using complete words.
+                            </Typography>
+                          </Paper>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  )}
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+  
+            <TablePagination sx={{alignItems: 'center'}}
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={listStudents.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Card>
+        </Container>
+  
+        <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
+            <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
+              {errorMsg}
+            </Alert>
+          </Snackbar>
+      </>
+    );
+  }
   return (
     <>
       <Helmet>
@@ -131,95 +242,14 @@ export default function ResultPage() {
       </Helmet>
 
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h4" gutterBottom>
-            Result of Attandance
-          </Typography>
-          <AppSearch setListStudents={setListStudents} refreshPage={refreshPage} showMessage={showMessage}/> 
-        </Stack>
+        <Typography variant="h4" sx={{ mb: 2 }} gutterBottom>
+          Result of Attandance
+        </Typography>
 
+        <AppSearch setListStudents={setListStudents} refreshPage={refreshPage} showMessage={showMessage}/> 
+        
         <Card>
-          <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
-
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  onRequestSort={handleRequestSort}
-                />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { mssv, name, present, absence, status } = row;
-
-                    return (
-                      <TableRow hover key={mssv} tabIndex={-1}>
-
-                        <TableCell align="left">{mssv}</TableCell>                        
-
-                        <TableCell component="th" scope="row">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-
-                        <TableCell align="left">{present}</TableCell>    
-                        <TableCell align="left">{absence}</TableCell>    
-
-                        <TableCell align="left">
-                          <Label color={(status === 'Ban' && 'error') || (status=== 'Warning' && 'warning') || 'success'}>{sentenceCase(status)}</Label>
-                        </TableCell>
-
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <TablePagination sx={{alignItems: 'center'}}
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={listStudents.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          Student
         </Card>
       </Container>
 

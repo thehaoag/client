@@ -1,31 +1,77 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Stack, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
+import useToken from '../../../components/useToken';
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
-  const navigate = useNavigate();
+
+  const { setToken } = useToken()
+  const navigate = useNavigate()
+
+  const [loginForm, setloginForm] = useState({
+    user: "",
+    password: ""
+  })
+
+  const [errorMsg, seterrorMsg] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const showMessage = (msg) => {
+    seterrorMsg(msg)
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    navigate('/dashboard', { replace: true });
+  const logIn = () => {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginForm)
+    }
+    fetch(`/login`, requestOptions)
+      .then((res) => res.json()
+      .then((result) => {
+        if (result.success)
+        {
+          setToken(result)
+          navigate('/dashboard', { replace: true });
+        }
+        else
+        {
+          showMessage(result.msg)
+        }
+        
+      }));
   };
+
+  const handleChange = (event) => { 
+    const {value, name} = event.target
+    setloginForm(prevNote => ({
+        ...prevNote, [name]: value}))
+  }
 
   return (
     <>
       <Stack spacing={3}  sx={{ my: 2 }}>
-        <TextField name="email" label="Email address" />
+        <TextField name="user" label="UserName" value={loginForm.user} onChange={handleChange}/>
 
         <TextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
+          value={loginForm.password}
+          onChange={handleChange}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -38,9 +84,15 @@ export default function LoginForm() {
         />
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={logIn}>
         Login
       </LoadingButton>
+
+      <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
+          <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
+            {errorMsg}
+          </Alert>
+        </Snackbar>
     </>
   );
 }

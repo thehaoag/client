@@ -12,8 +12,10 @@ import useResponsive from '../../../hooks/useResponsive';
 import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
+import useToken from '../../../components/useToken';
 //
 import navConfig from './config';
+
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,8 @@ export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
+
+  const { token } = useToken()
 
   useEffect(() => {
     if (openNav) {
@@ -64,11 +68,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {token.account.name}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
+                {token.account.role}
               </Typography>
             </Box>
           </StyledAccount>
