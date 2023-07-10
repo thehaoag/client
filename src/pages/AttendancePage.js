@@ -13,7 +13,7 @@ import {
   TableRow, TableCell,
   Snackbar, Checkbox } from '@mui/material';
 // sections
-import { AppSearch } from '../sections/@dashboard/app';
+import { AppSearchAttend } from '../sections/@dashboard/app';
 // component
 import Scrollbar from '../components/scrollbar';
 
@@ -64,24 +64,18 @@ export default function AttendancePage() {
       console.log(itemsList)
       if (currentCode) {
         fetch(`/diemdanh/${currentCode}`).then((res) =>
-          res.json().then((data) => {
-            if (data.success === true)
+          res.json().then((result) => {
+            if (result.success === true)
             {
               seterrorMsg('')
-              const student = data.data
-              if (!selected.some(s => s === student.mssv))
-                handleClick(student.mssv)
+              const studentID = result.data
+              if (!selected.some(s => s === studentID))
+                handleClick(studentID)
               else
-              {
-                showMessage(`Student ${student.name} attended.`)
-              }
-                
+                showMessage(`Student ${studentID} attended.`)
             }
             else
-            {
-              showMessage(data.msg)
-            }
-
+              showMessage(result.msg)
           })
         );
       }
@@ -106,7 +100,7 @@ export default function AttendancePage() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             Attendance
           </Typography>
-          <AppSearch setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
+          <AppSearchAttend setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Card>
@@ -134,7 +128,7 @@ export default function AttendancePage() {
                       <TableBody>
                         {
                           itemsList.map((item, index) => {
-                            const { mssv, name, date } = item;
+                            const { mssv, name, datesession } = item;
                             const selectedUser = selected.indexOf(mssv) !== -1;
 
                             return (
@@ -145,7 +139,7 @@ export default function AttendancePage() {
                                   </Typography>
                                 </TableCell>
 
-                                <TableCell align="left">{date}</TableCell>    
+                                <TableCell align="left">{datesession}</TableCell>    
 
                                 <TableCell padding="checkbox">
                                   <Checkbox checked={selectedUser} onChange={() => handleClick( mssv)} />
