@@ -191,11 +191,7 @@ export default function AttendancePage() {
   
             <Grid item xs={12} md={6} lg={4}>
               <Card >
-                <CardHeader title={
-                  <Typography noWrap variant="h6" component="h4">
-                    List Students Attended
-                  </Typography>
-                }/>
+                <CardHeader title='List Students Attended'/>
                 <Scrollbar sx={{ minHeight: 380, maxHeight: 380}}>
                   <TableContainer>
                     <Table>

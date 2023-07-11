@@ -8,6 +8,7 @@ import Page404 from './pages/Page404';
 import AttendancePage from './pages/AttendancePage';
 import ResultPage from './pages/ResultPage';
 import Protected from './components/Protected';
+import ImportPage from './pages/ImportPage';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/result" />, index: true },
         { path: 'result', element: <Protected title='result'><ResultPage/></Protected>},
         { path: 'attendance', element: <Protected title='attendance'><AttendancePage/></Protected> },
+        { path: 'import', element: <Protected title='import'><ImportPage/></Protected> },
       ],
     },
     {

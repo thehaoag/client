@@ -34,12 +34,17 @@ const navConfig = [
   {
     title: 'Result of Attandance',
     path: '/dashboard/result',
-    icon: icon('ic_analytics')
+    icon: icon('ic_user')
   },
   {
     title: 'Attendance',
     path: '/dashboard/attendance',
-    icon: icon('ic_user')
+    icon: icon('ic_attend')
+  },
+  {
+    title: 'Import Data',
+    path: '/dashboard/import',
+    icon: icon('ic_import')
   }
 ];
 
