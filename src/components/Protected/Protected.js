@@ -10,7 +10,6 @@ Protected.propTypes = {
 
 export default function Protected({title, children}) {
   const { token } = useToken()
-  
   switch(title){
     case 'login':
       if (token)
@@ -19,12 +18,11 @@ export default function Protected({title, children}) {
     case 'result':
       if (!token)
         return <Navigate to="/login" replace />
-
       return children
     case 'attendance':
       if (!token)
         return <Navigate to="/login" replace />
-      if (token.account.role === 'student')
+      if (token && token.account.role === 'student')
         return <Navigate to="/dashboard" replace />
       return children
     default:

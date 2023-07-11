@@ -127,7 +127,7 @@ export default function ResultPage() {
     setOpen(false);
   };
 
-  if (token.account.role === 'teacher')
+  if (token && token.account.role === 'teacher')
   {
     return (
       <>

@@ -11,7 +11,11 @@ import {
   TableContainer, 
   Table, TableBody,
   TableRow, TableCell,
-  Snackbar, Checkbox } from '@mui/material';
+  Snackbar, Checkbox,
+  Dialog, DialogActions,
+  DialogContent, DialogContentText,
+  DialogTitle
+} from '@mui/material';
 // sections
 import { AppSearchAttend } from '../sections/@dashboard/app';
 // component
@@ -25,15 +29,46 @@ export default function AttendancePage() {
     const [itemsList, setItemsList] = useState([]);
     const [currentCode, setCurentCode] = useState('');
     const [errorMsg, seterrorMsg] = useState('');
-    const [open, setOpen] = useState(false);
-    const [currentDate] = useState(new Date().toLocaleDateString())
     const [selected, setSelected] = useState([]);
+
+    const [openMessage, setOpenMessage] = useState(false);
+    const handleCloseMessage = () => {
+      setOpenMessage(false);
+    };
+
+    const showMessage = (msg) => {
+      seterrorMsg(msg)
+      setOpenMessage(true);
+    };
+
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const handleClickOpenConfirm = () => {
+      setOpenConfirm(true);
+    };
+    const handleCloseConfirm = () => {
+      setOpenConfirm(false);
+    };
 
     const handleClick = (mssv) => {
       const selectedIndex = selected.indexOf(mssv);
       let newSelected = [];
+      console.log(selectedIndex)
       if (selectedIndex === -1) {
         newSelected = newSelected.concat(selected, mssv);
+        const newList = itemsList.map((item) => {
+          if (item.mssv === mssv) {
+            const updatedItem = {
+              ...item,
+              datesession: new Date().toLocaleDateString('en-GB'),
+            };
+    
+            return updatedItem;
+          }
+    
+          return item;
+        });
+    
+        setItemsList(newList);
       } else if (selectedIndex === 0) {
         newSelected = newSelected.concat(selected.slice(1));
       } else if (selectedIndex === selected.length - 1) {
@@ -41,18 +76,28 @@ export default function AttendancePage() {
       } else if (selectedIndex > 0) {
         newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
       }
+      
       setSelected(newSelected);
-    };
 
-    const showMessage = (msg) => {
-      seterrorMsg(msg)
-      setOpen(true);
-    };
-
-    const handleClose = () => {
-      setOpen(false);
-    };
+      if (selectedIndex > -1) {
+        newSelected = newSelected.concat(selected, mssv);
+        const newList = itemsList.map((item) => {
+          if (item.mssv === mssv) {
+            const updatedItem = {
+              ...item,
+              datesession: null,
+            };
     
+            return updatedItem;
+          }
+    
+          return item;
+        });
+    
+        setItemsList(newList);
+      }
+    };
+
     const StyledProductImg = styled('img')({
       top: 0,
       width: '100%',
@@ -61,7 +106,6 @@ export default function AttendancePage() {
     });
 
     const Attend = () => {
-      console.log(itemsList)
       if (currentCode) {
         fetch(`/diemdanh/${currentCode}`).then((res) =>
           res.json().then((result) => {
@@ -81,12 +125,42 @@ export default function AttendancePage() {
       }
     }
 
-    const handleSubmitAttend = () => {}
+    const handleSubmitAttend = () => {
+      console.log(itemsList)
+      const jsonParam = {
+        "classID": currentCode,
+        "listStudents": itemsList
+      }
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonParam)
+      }
+      fetch(`/submitAttended`,requestOptions).then((res) =>
+          res.json().then((result) => {
+            if (result.success === true)
+            {
+              setOpenConfirm(false)
+            }
+            else
+            {
+              showMessage(result.msg)
+              setOpenConfirm(false)
+            }
+          })
+        );
+    }
 
     const refreshPage = (list) => {
       if (list && list.length > 0) {
         setItemsList(list)
-        setSelected([])
+        let listAttend = []
+        listAttend = list.map(item => {
+          if (item.datesession)
+            return item.mssv
+          return null
+        })
+        setSelected(listAttend)
       }
     }
 
@@ -119,7 +193,7 @@ export default function AttendancePage() {
               <Card >
                 <CardHeader title={
                   <Typography noWrap variant="h6" component="h4">
-                    List Attended - {currentDate}
+                    List Students Attended
                   </Typography>
                 }/>
                 <Scrollbar sx={{ minHeight: 380, maxHeight: 380}}>
@@ -130,7 +204,6 @@ export default function AttendancePage() {
                           itemsList.map((item, index) => {
                             const { mssv, name, datesession } = item;
                             const selectedUser = selected.indexOf(mssv) !== -1;
-
                             return (
                               <TableRow hover key={index} tabIndex={-1} role="checkbox" selected={selectedUser}>
                                 <TableCell component="th" scope="row">
@@ -153,7 +226,7 @@ export default function AttendancePage() {
                   </TableContainer>
                 </Scrollbar>
                 
-                <Button disabled={itemsList.length === 0} sx={{ m: 2 }} variant="contained" onClick={handleSubmitAttend}>Submit</Button>
+                <Button disabled={itemsList.length === 0} sx={{ m: 2 }} variant="contained" onClick={handleClickOpenConfirm}>Submit</Button>
                 
               </Card>
             </Grid>
@@ -161,8 +234,30 @@ export default function AttendancePage() {
           </Grid>
         </Container>
 
-        <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
-          <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
+        <Dialog
+          open={openConfirm}
+          onClose={handleCloseConfirm}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Confirm Submit"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure submit this list students attended?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirm}>Cancel</Button>
+            <Button onClick={handleSubmitAttend} autoFocus>
+              Accept
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={openMessage} autoHideDuration={5000} onClose={handleCloseMessage}>
+          <Alert onClose={handleCloseMessage} variant="filled" severity="error" sx={{ width: '100%' }}>
             {errorMsg}
           </Alert>
         </Snackbar>

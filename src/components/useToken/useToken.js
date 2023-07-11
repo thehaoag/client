@@ -4,7 +4,6 @@ function useToken() {
 
   function getToken() {
     const userToken = localStorage.getItem('token');
-
     return JSON.parse(userToken) && JSON.parse(userToken)
   }
   

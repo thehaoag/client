@@ -37,8 +37,8 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
         year: getYear(),
         semester: getSemester(),
         maMH: '',
-        group: 0,
-        session: 0
+        group: '',
+        session: ''
       })
 
     const handleChange = (event) => { 
@@ -50,11 +50,6 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
     const handleClick = () => {
         if (submitForm.year > 0 && submitForm.semester > 0 && submitForm.maMH && submitForm.group > 0 && submitForm.session > 0)
         {
-            console.log(submitForm.year)
-            console.log(submitForm.semester)
-            console.log(submitForm.maMH)
-            console.log(submitForm.group)
-            console.log(submitForm.session)
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -83,8 +78,8 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
     };
 
     return (
-        <Grid justifyContent="center" alignItems="center" container sx={{ mb: 2 }} spacing={2}>
-            <Grid item xs={12} sm={6} md={2}>
+        <Grid container sx={{ mb: 2 }} spacing={2}>
+            <Grid item xs={12} sm={6} md={3}>
                 <FormControl sx={{ width: '100%' }} size="small">
                     <InputLabel id="lbYear">Year</InputLabel>
                     <Select
@@ -128,7 +123,7 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
                 <FormControl sx={{ width: '100%' }} size="small">
                     <InputLabel id="lbCode">Course Code</InputLabel>
                     <Select
@@ -146,7 +141,7 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={1.1}>
+            <Grid item xs={12} sm={4} md={2}>
                 <FormControl sx={{ width: '100%' }} size="small">
                     <InputLabel id="lbGroup">Group</InputLabel>
                     <Select
@@ -157,13 +152,12 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
                         label="Group"
                         onChange={handleChange}
                     >
-                        <MenuItem value={0}>0</MenuItem>
                         <MenuItem value={1}>1</MenuItem>
                         <MenuItem value={2}>2</MenuItem>
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={1.1}>
+            <Grid item xs={12} sm={4} md={2}>
                 <FormControl sx={{ width: '100%' }} size="small">
                     <InputLabel id="lbSession">Session</InputLabel>
                     <Select
@@ -174,13 +168,12 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
                         label="Session"
                         onChange={handleChange}
                     >
-                        <MenuItem value={0}>0</MenuItem>
                         <MenuItem value={1}>1</MenuItem>
                         <MenuItem value={2}>2</MenuItem>
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={1} alignItems={"center"}>
+            <Grid item xs={12} sm={4} alignItems={"center"}>
                 <Button variant="contained" 
                     disabled = {submitForm.year === 0 || submitForm.semester === 0 || !submitForm.maMH || submitForm.group === 0 || submitForm.session === 0} 
                     onClick={handleClick}>

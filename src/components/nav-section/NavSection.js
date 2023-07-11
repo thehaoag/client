@@ -19,7 +19,7 @@ export default function NavSection({ data = [], ...other }) {
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
-        { token.account.role === 'teacher' 
+        { token && token.account.role === 'teacher' 
             ? data.map((item) => (
               <NavItem key={item.title} item={item} />
               ))
