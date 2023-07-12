@@ -20,11 +20,12 @@ import {
 import { AppSearchAttend } from '../sections/@dashboard/app';
 // component
 import Scrollbar from '../components/scrollbar';
+import useToken from '../components/useToken';
 
 // ----------------------------------------------------------------------
 
 export default function AttendancePage() {
-
+    const { token } = useToken();
     const [camera, setCamera] = useState(false);
     const [itemsList, setItemsList] = useState([]);
     const [currentCode, setCurentCode] = useState('');
@@ -174,7 +175,7 @@ export default function AttendancePage() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             Attendance
           </Typography>
-          <AppSearchAttend setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
+          <AppSearchAttend token={token} setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Card>

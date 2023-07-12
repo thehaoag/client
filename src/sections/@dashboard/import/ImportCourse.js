@@ -2,16 +2,13 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import { Grid, InputLabel, Select, MenuItem, FormControl, Button } from '@mui/material';
-// components
-import useToken from '../../../components/useToken';
 
-ImportToolbar.propTypes = {
-    showMessage: PropTypes.func
+ImportCourse.propTypes = {
+    showMessage: PropTypes.func,
+    token: PropTypes.object
 }; 
 
-export default function ImportToolbar({showMessage}) {
-
-    const { token } = useToken()
+export default function ImportCourse({token, showMessage}) {
 
     function getYear() {
         const currentYear = new Date()
@@ -39,7 +36,7 @@ export default function ImportToolbar({showMessage}) {
     const [importForm, setImportForm] = useState({
         year: getYear(),
         semester: getSemester(),
-        file: {},
+        file: null,
         createBy: token && token.account.id,
         createByName: token && token.account.name
     })
@@ -79,7 +76,7 @@ export default function ImportToolbar({showMessage}) {
     }
 
     return (
-        <Grid justifyContent="center" alignItems="center" sx={{ mb: 2, mt: 2 }} container spacing={2}>
+        <Grid justifyContent="center" alignItems="center" sx={{ mb: 3, mt: 1 }} container spacing={2}>
             <Grid item xs={12} sm={6} md={3}>
                 <FormControl sx={{ width: '100%' }} size="small">
                     <InputLabel id="lbYear">Year</InputLabel>
@@ -130,7 +127,7 @@ export default function ImportToolbar({showMessage}) {
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
                 <Button variant="contained" 
-                    disabled = {importForm.year === 0 || importForm.semester === 0} 
+                    disabled = {importForm.year === 0 || importForm.semester === 0 || importForm.file === null || importForm.file === ''} 
                     onClick={handleClick}>
                         Import
                 </Button>

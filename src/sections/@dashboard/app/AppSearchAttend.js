@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { Grid, Button, InputLabel, FormControl, MenuItem, Select } from "@mui/material";
 
 AppSearchAttend.propTypes = {
     setCurentCode: PropTypes.func,
     refreshPage: PropTypes.func,
-    showMessage: PropTypes.func
+    showMessage: PropTypes.func,
+    token: PropTypes.object
 };
 
-export default function AppSearchAttend({ setCurentCode, refreshPage, showMessage }) {
+export default function AppSearchAttend({ token, setCurentCode, refreshPage, showMessage }) {
     
     function getYear() {
         const currentYear = new Date()
@@ -39,7 +40,7 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
         maMH: '',
         group: '',
         session: ''
-      })
+    })
 
     const handleChange = (event) => { 
         const {value, name} = event.target
@@ -76,6 +77,28 @@ export default function AppSearchAttend({ setCurentCode, refreshPage, showMessag
         }
         
     };
+
+    useEffect(() => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"year": submitForm.year, "semester": submitForm.semester, "userID": token.account.id})
+        }
+
+        fetch(`/loadCourseData`, requestOptions).then((res) =>
+                res.json().then((result) => {
+                    if (result.success === true)
+                    {
+                        console.log(result.data)
+                    }
+                    else
+                    {
+                        showMessage(result.msg)
+                    }
+                    
+                })
+            );
+    });
 
     return (
         <Grid container sx={{ mb: 2 }} spacing={2}>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
-import { Typography, Container, Card, CardHeader, Alert, Snackbar } from '@mui/material';
+import { Typography, Container, Card, CardHeader, Alert, Snackbar, Grid } from '@mui/material';
 // sections
-import { ImportToolbar } from '../sections/@dashboard/import';
+import { ImportCourse, ImportStudents, ImportFace} from '../sections/@dashboard/import';
+// components
+import useToken from '../components/useToken';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +22,9 @@ export default function ImportPage() {
         seterrorMsg(msg)
         setOpenMessage(true);
     };
+
+    const { token } = useToken()
+
     return (
         <>
             <Helmet>
@@ -32,8 +37,27 @@ export default function ImportPage() {
                 </Typography>
                 <Card>
                     <CardHeader title='Import Course'/>
-                    <ImportToolbar showMessage={showMessage}/>
+                    <ImportCourse token={token} showMessage={showMessage}/>
                 </Card>
+                {token && token.account.role === 'admin'
+                    ?
+                    <Grid sx={{ mt: 1 }} container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <Card >
+                                <CardHeader title='Import List Students'/>
+                                <ImportStudents token={token} showMessage={showMessage}/>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Card>
+                                <CardHeader title='Import Face'/>
+                                <ImportFace token={token} showMessage={showMessage}/>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                    
+                    : <></>
+                }
             </Container>
 
             <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={openMessage} autoHideDuration={5000} onClose={handleCloseMessage}>
