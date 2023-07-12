@@ -48,28 +48,23 @@ export default function ImportToolbar({showMessage}) {
         const {value, name, files} = event.target
         if (files && files.length > 0)
             setImportForm(prevNote => ({
-                ...prevNote, [name]: files}))
+                ...prevNote, [name]: files.item(0)}))
         else
             setImportForm(prevNote => ({
                 ...prevNote, [name]: value}))
     }
 
     const handleClick = () => {
-        console.log(importForm)
-        const myFile = document.querySelector("input[type=file]").files[0];
+
         const data = new FormData();
         data.append('year', importForm.year)
-        data.append('file', myFile);
-        
         data.append("semester", importForm.semester)
+        data.append('file', importForm.file, importForm.file.name);
         data.append("createBy", importForm.createBy)
         data.append("createByName", importForm.createByName)
-        console.log(data.get('year'))
-        console.log(data.get('semester'))
-        console.log(data.get('file'))
+
         const requestOptions = {
             method: 'POST',
-            
             body: data
         }
 
@@ -130,7 +125,7 @@ export default function ImportToolbar({showMessage}) {
                 </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-                <input accept='.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel' 
+                <input accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel' 
                     type='file' name='file' onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
