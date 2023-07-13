@@ -34,6 +34,12 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
         }
     }
 
+    const [listCourse, setListCourse] = useState([])
+    const [responseData, setResponseData] = useState([])
+    const [listGroup ,setListGroup] = useState([])
+    const [sessions, setSessions] = useState(0)
+
+
     const [submitForm, setSubmitForm] = useState({
         year: getYear(),
         semester: getSemester(),
@@ -46,6 +52,12 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
         const {value, name} = event.target
         setSubmitForm(prevNote => ({
             ...prevNote, [name]: value}))
+        if (name === 'maMH')
+        {
+            const groups = responseData.filter(item => item.MaMH === value)
+            setListGroup(groups)
+            setSessions(groups[0].Sessions)
+        }
     }
 
     const handleClick = () => {
@@ -79,6 +91,7 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
     };
 
     useEffect(() => {
+        console.log('Use Effect')
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -89,7 +102,21 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                 res.json().then((result) => {
                     if (result.success === true)
                     {
-                        console.log(result.data)
+                        setResponseData(result.data)
+
+                        const key = 'MaMH';
+                        const arrayUniqueByKey = [...new Map(result.data.map(item =>
+                            [item[key], item])).values()];
+
+                        setSubmitForm(prevNote => ({
+                            ...prevNote, 'maMH': ''}))
+                        setListCourse(arrayUniqueByKey)
+                        setSubmitForm(prevNote => ({
+                            ...prevNote, 'group': ''}))
+                        setListGroup([])
+                        setSubmitForm(prevNote => ({
+                            ...prevNote, 'session': ''}))
+                        setSessions(0)
                     }
                     else
                     {
@@ -98,7 +125,8 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                     
                 })
             );
-    });
+    }, [submitForm.year, submitForm.semester, token.account.id, showMessage]);
+
 
     return (
         <Grid container sx={{ mb: 2 }} spacing={2}>
@@ -157,10 +185,14 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                         label="Course Code"
                         onChange={handleChange}
                     >
-                        <MenuItem value={'500001'}>503005 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'500002'}>503006 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'500003'}>503007 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'500004'}>503008 - Lập trình hướng đối tượng</MenuItem>
+                        {
+                            listCourse && listCourse.map((course,index) => {
+                                const {MaMH, TenMH} = course
+                                return (
+                                    <MenuItem key={index} value={MaMH}>{MaMH} - {TenMH}</MenuItem>
+                                )
+                            })
+                        }
                     </Select>
                 </FormControl>
             </Grid>
@@ -175,8 +207,14 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                         label="Group"
                         onChange={handleChange}
                     >
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
+                        {
+                            listGroup && listGroup.map((item, index) => {
+                                const { Nhom } = item
+                                return (
+                                    <MenuItem key={index} value={Nhom}>{Nhom}</MenuItem>
+                                )
+                            })
+                        }
                     </Select>
                 </FormControl>
             </Grid>
@@ -191,14 +229,17 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                         label="Session"
                         onChange={handleChange}
                     >
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
+                        {
+                            sessions && [...Array(sessions)].map((_, index) => 
+                                <MenuItem key={index} value={index+1}>{index+1}</MenuItem>
+                            )
+                        }
                     </Select>
                 </FormControl>
             </Grid>
             <Grid item xs={12} sm={4} alignItems={"center"}>
                 <Button variant="contained" 
-                    disabled = {submitForm.year === 0 || submitForm.semester === 0 || !submitForm.maMH || submitForm.group === 0 || submitForm.session === 0} 
+                    disabled = {submitForm.year === 0 || submitForm.semester === 0 || !submitForm.maMH || !submitForm.group || !submitForm.session} 
                     onClick={handleClick}>
                         Submit
                 </Button>

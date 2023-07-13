@@ -8,7 +8,6 @@ import {
   Typography,
   Box, Button, 
   Card, CardHeader, 
-  TableContainer, 
   Table, TableBody,
   TableRow, TableCell,
   Snackbar, Checkbox,
@@ -194,33 +193,31 @@ export default function AttendancePage() {
               <Card >
                 <CardHeader title='List Students Attended'/>
                 <Scrollbar sx={{ minHeight: 380, maxHeight: 380}}>
-                  <TableContainer>
-                    <Table>
-                      <TableBody>
-                        {
-                          itemsList.map((item, index) => {
-                            const { mssv, name, datesession } = item;
-                            const selectedUser = selected.indexOf(mssv) !== -1;
-                            return (
-                              <TableRow hover key={index} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                                <TableCell component="th" scope="row">
-                                  <Typography variant="subtitle2" noWrap>
-                                    {mssv} - {name}
-                                  </Typography>
-                                </TableCell>
+                  <Table >
+                    <TableBody>
+                      {
+                        itemsList.map((item, index) => {
+                          const { mssv, name, datesession } = item;
+                          const selectedUser = selected.indexOf(mssv) !== -1;
+                          return (
+                            <TableRow hover key={index} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                              <TableCell component="th" scope="row">
+                                <Typography variant="subtitle2" noWrap>
+                                  {mssv} - {name}
+                                </Typography>
+                              </TableCell>
 
-                                <TableCell align="left">{datesession}</TableCell>    
+                              <TableCell align="left">{datesession}</TableCell>    
 
-                                <TableCell padding="checkbox">
-                                  <Checkbox checked={selectedUser} onChange={() => handleClick( mssv)} />
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })
-                        }
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                              <TableCell padding="checkbox">
+                                <Checkbox checked={selectedUser} onChange={() => handleClick( mssv)} />
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })
+                      }
+                    </TableBody>
+                  </Table>
                 </Scrollbar>
                 
                 <Button disabled={itemsList.length === 0} sx={{ m: 2 }} variant="contained" onClick={handleClickOpenConfirm}>Submit</Button>
