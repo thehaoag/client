@@ -1,27 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { Grid, Button, InputLabel, FormControl, MenuItem, Select } from "@mui/material";
 
 AppSearch.propTypes = {
-    setCurentCode: PropTypes.func,
     refreshPage: PropTypes.func,
-    showMessage: PropTypes.func
+    showMessage: PropTypes.func,
+    token:  PropTypes.object
 };
 
-export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
+export default function AppSearch({ token, refreshPage, showMessage }) {
     
-    const [year, setYear] = useState(() => {
+    function getYear() {
         const currentYear = new Date()
         if (currentYear.getMonth() > 7)
             return currentYear.getFullYear()+1
         return currentYear.getFullYear()
-    });
+    }
 
-    const handleChangeYear = (event) => {
-        setYear(event.target.value);
-    };
-
-    const [semester, setSemester] = useState(() => {
+    function getSemester() {
         const currentDate = new Date()
         const month = currentDate.getMonth()
         switch(true)
@@ -35,49 +31,89 @@ export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
             default:
                 return 1
         }
-    });
+    }
 
-    const handleChangeSemester = (event) => {
-        setSemester(event.target.value);
-    };
+    const [listCourse, setListCourse] = useState([])
+    const [responseData, setResponseData] = useState([])
+    const [listGroup ,setListGroup] = useState([])
 
+    const [submitForm, setSubmitForm] = useState({
+        year: getYear(),
+        semester: getSemester(),
+        maMH: '',
+        group: ''
+    })
+
+    const handleChange = (event) => { 
+        const {value, name} = event.target
+        setSubmitForm(prevNote => ({
+            ...prevNote, [name]: value}))
+        if (name === 'maMH')
+        {
+            const groups = responseData.filter(item => item.MaMH === value)
+            setListGroup(groups)
+        }
+    }
     
 
-    const [code, setCode] = useState('');
-
-    const handleChangeCode = (event) => {
-        setCode(event.target.value);
-    };
-
-    const [group, setgroup] = useState('');
-
-    const handleChangeGroup = (event) => {
-        setgroup(event.target.value);
-    };
-
     const handleClick = () => {
-        if (code)
+        if (submitForm.year > 0 && submitForm.semester > 0 && submitForm.maMH && submitForm.group > 0)
         {
-            fetch(`/getListStudents/${code}`).then((res) =>
-                res.json().then((data) => {
-                    if (data.success === true)
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(submitForm)
+            }
+
+            fetch(`/getListStudents`, requestOptions).then((res) =>
+                res.json().then((result) => {
+                    if (result.success === true)
                     {
                         if (refreshPage !== undefined)
-                            refreshPage(data.listStudents)
+                            refreshPage(result.sessions ,result.listStudents)
                         
-                        if (setCurentCode !== undefined)
-                            setCurentCode(data.currentCode)
                     }
                     else
                     {
-                        showMessage(data.msg)
+                        showMessage(result.msg)
+                    }
+                })
+            );
+        }  
+    };
+
+    useEffect(() => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"year": submitForm.year, "semester": submitForm.semester, "userID": token.account.id})
+        }
+
+        fetch(`/loadCourseData`, requestOptions).then((res) =>
+                res.json().then((result) => {
+                    if (result.success === true)
+                    {
+                        setResponseData(result.data)
+
+                        const key = 'MaMH';
+                        const arrayUniqueByKey = [...new Map(result.data.map(item =>
+                            [item[key], item])).values()];
+
+                        setSubmitForm(prevNote => ({
+                            ...prevNote, 'maMH': ''}))
+                        setListCourse(arrayUniqueByKey)
+                        setSubmitForm(prevNote => ({
+                            ...prevNote, 'group': ''}))
+                        setListGroup([])
+                    }
+                    else
+                    {
+                        showMessage(result.msg)
                     }
                     
                 })
             );
-        }
-        
-    };
+    }, [submitForm.year, submitForm.semester, token.account.id, showMessage]);
 
     return (
         <Grid justifyContent="center" alignItems="center" container sx={{ mb: 2 }} spacing={2}>
@@ -87,9 +123,10 @@ export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
                     <Select
                         labelId="lbYear"
                         id="inputYear"
-                        value={year}
+                        value={submitForm.year}
+                        name="year"
                         label="Year"
-                        onChange={handleChangeYear}
+                        onChange={handleChange}
                     >
                         {
                             [...Array(3)].map((item, index) => {
@@ -113,9 +150,10 @@ export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
                     <Select
                         labelId="lbSemester"
                         id="inputSemester"
-                        value={semester}
+                        name="semester"
+                        value={submitForm.semester}
                         label="Semester"
-                        onChange={handleChangeSemester}
+                        onChange={handleChange}
                     >
                         <MenuItem value={1}>Semester 1</MenuItem>
                         <MenuItem value={2}>Semester 2</MenuItem>
@@ -129,14 +167,19 @@ export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
                     <Select
                         labelId="lbCode"
                         id="inputCode"
-                        value={code}
+                        value={submitForm.maMH}
+                        name="maMH"
                         label="Course Code"
-                        onChange={handleChangeCode}
+                        onChange={handleChange}
                     >
-                        <MenuItem value={'H001'}>503005 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'H002'}>503006 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'H003'}>503007 - Lập trình hướng đối tượng</MenuItem>
-                        <MenuItem value={'H004'}>503008 - Lập trình hướng đối tượng</MenuItem>
+                        {
+                            listCourse && listCourse.map((course,index) => {
+                                const {MaMH, TenMH} = course
+                                return (
+                                    <MenuItem key={index} value={MaMH}>{MaMH} - {TenMH}</MenuItem>
+                                )
+                            })
+                        }
                     </Select>
                 </FormControl>
             </Grid>
@@ -146,17 +189,27 @@ export default function AppSearch({ setCurentCode, refreshPage, showMessage }) {
                     <Select
                         labelId="lbGroup"
                         id="inputGroup"
-                        value={group}
+                        value={submitForm.group}
+                        name="group"
                         label="Group"
-                        onChange={handleChangeGroup}
+                        onChange={handleChange}
                     >
-                        <MenuItem value={9}>9</MenuItem>
-                        <MenuItem value={13}>13</MenuItem>
+                        {
+                            listGroup && listGroup.map((item, index) => {
+                                const { Nhom } = item
+                                return (
+                                    <MenuItem key={index} value={Nhom}>{Nhom}</MenuItem>
+                                )
+                            })
+                        }
                     </Select>
                 </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={1} alignItems={"center"}>
-                <Button variant="contained" disabled = {!code} onClick={handleClick}>Submit</Button>
+                <Button variant="contained" disabled = {submitForm.year === 0 || submitForm.semester === 0 || !submitForm.maMH || !submitForm.group} 
+                    onClick={handleClick}>
+                        Submit
+                </Button>
             </Grid>
         </Grid>
     );

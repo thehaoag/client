@@ -91,7 +91,6 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
     };
 
     useEffect(() => {
-        console.log('Use Effect')
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
