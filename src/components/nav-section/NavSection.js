@@ -23,9 +23,11 @@ export default function NavSection({ data = [], ...other }) {
             ? data.map((item) => (
               <NavItem key={item.title} item={item} />
               ))
-            : data.filter(c => c.path === '/dashboard/result').map((item) => (
-              <NavItem key={item.title} item={item} />
-              ))
+            : (token && token.account.role === 'admin' 
+              ? data.filter(c => c.path === '/dashboard/import').map((item) => (
+                  <NavItem key={item.title} item={item} /> ))
+              : data.filter(c => c.path === '/dashboard/result').map((item) => (
+                <NavItem key={item.title} item={item} />)))
         }
       </List>
     </Box>

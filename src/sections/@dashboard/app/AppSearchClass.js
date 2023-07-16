@@ -5,10 +5,11 @@ import { Grid, Button, InputLabel, FormControl, MenuItem, Select } from "@mui/ma
 AppSearchClass.propTypes = {
     refreshPage: PropTypes.func,
     showMessage: PropTypes.func,
-    token:  PropTypes.object
+    token:  PropTypes.object,
+    setLoading: PropTypes.func
 };
 
-export default function AppSearchClass({ token, refreshPage, showMessage }) {
+export default function AppSearchClass({ token, refreshPage, showMessage, setLoading}) {
     
     function getYear() {
         const currentYear = new Date()
@@ -53,7 +54,7 @@ export default function AppSearchClass({ token, refreshPage, showMessage }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submitForm)
             }
-
+            setLoading(true)
             fetch(`/getListClass`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
@@ -63,10 +64,11 @@ export default function AppSearchClass({ token, refreshPage, showMessage }) {
                     }
                     else
                     {
-                        showMessage(result.msg)
+                        showMessage(result.success, result.msg)
                     }
                 })
             );
+            setLoading(false)
         }  
     };
 

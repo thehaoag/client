@@ -18,12 +18,16 @@ export default function Protected({title, children}) {
     case 'result':
       if (!token)
         return <Navigate to="/login" replace />
+      if (token && token.account.role === 'admin')
+        return <Navigate to="/dashboard/import" replace />
       return children
     case 'attendance':
       if (!token)
         return <Navigate to="/login" replace />
       if (token && token.account.role === 'student')
         return <Navigate to="/dashboard" replace />
+      if (token && token.account.role === 'admin')
+        return <Navigate to="/dashboard/import" replace />
       return children
     case 'import':
       if (!token)

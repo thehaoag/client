@@ -19,11 +19,17 @@ export default function LoginForm() {
     password: ""
   })
 
-  const [errorMsg, seterrorMsg] = useState('');
+  const [message, setMessage] = useState({
+    Success: true,
+    Content: ""
+  });
   const [open, setOpen] = useState(false);
 
-  const showMessage = (msg) => {
-    seterrorMsg(msg)
+  const showMessage = (isSuccess, msg) => {
+    setMessage({
+      Success: isSuccess,
+      Content: msg
+    })
     setOpen(true);
   };
 
@@ -49,7 +55,7 @@ export default function LoginForm() {
         }
         else
         {
-          showMessage(result.msg)
+          showMessage(result.success, result.msg)
         }
         
       }));
@@ -89,8 +95,8 @@ export default function LoginForm() {
       </LoadingButton>
 
       <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
-          <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
-            {errorMsg}
+          <Alert onClose={handleClose} variant="filled" severity={message.Success ? "success" : "error"} sx={{ width: '100%' }}>
+            {message.Content}
           </Alert>
         </Snackbar>
     </>

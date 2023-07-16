@@ -6,10 +6,11 @@ AppSearchAttend.propTypes = {
     setCurentCode: PropTypes.func,
     refreshPage: PropTypes.func,
     showMessage: PropTypes.func,
-    token: PropTypes.object
+    token: PropTypes.object,
+    setLoading: PropTypes.func
 };
 
-export default function AppSearchAttend({ token, setCurentCode, refreshPage, showMessage }) {
+export default function AppSearchAttend({ token, setCurentCode, refreshPage, showMessage, setLoading}) {
     
     function getYear() {
         const currentYear = new Date()
@@ -68,7 +69,7 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submitForm)
             }
-
+            setLoading(true)
             fetch(`/getListStudents_Attend`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
@@ -86,6 +87,7 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                     
                 })
             );
+            setLoading(false)
         }
         
     };
@@ -96,7 +98,7 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({"year": submitForm.year, "semester": submitForm.semester, "userID": token.account.id})
         }
-
+        setLoading(true)
         fetch(`/loadCourseData`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
@@ -119,12 +121,13 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                     }
                     else
                     {
-                        showMessage(result.msg)
+                        showMessage(result.success, result.msg)
                     }
                     
                 })
             );
-    }, [submitForm.year, submitForm.semester, token.account.id, showMessage]);
+        setLoading(false)
+    }, [submitForm.year, submitForm.semester, token.account.id, showMessage, setLoading]);
 
 
     return (

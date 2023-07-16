@@ -5,10 +5,11 @@ import { Grid, InputLabel, Select, MenuItem, FormControl, Button } from '@mui/ma
 
 ImportCourse.propTypes = {
     showMessage: PropTypes.func,
-    token: PropTypes.object
+    token: PropTypes.object,
+    setLoading: PropTypes.func
 }; 
 
-export default function ImportCourse({token, showMessage}) {
+export default function ImportCourse({token, showMessage, setLoading}) {
 
     function getYear() {
         const currentYear = new Date()
@@ -64,15 +65,16 @@ export default function ImportCourse({token, showMessage}) {
             method: 'POST',
             body: data
         }
-
+        setLoading(true)
         fetch(`/importCourse`, requestOptions).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
-                    showMessage(result.msg)
+                    showMessage(result.success, result.msg)
                 else
-                    showMessage(result.msg)
+                    showMessage(result.success, result.msg)
             })
         );
+        setLoading(false)
     }
 
     return (

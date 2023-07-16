@@ -13,7 +13,7 @@ import {
   Snackbar, Checkbox,
   Dialog, DialogActions,
   DialogContent, DialogContentText,
-  DialogTitle
+  DialogTitle, Backdrop, CircularProgress
 } from '@mui/material';
 // sections
 import { AppSearchAttend } from '../sections/@dashboard/app';
@@ -28,7 +28,11 @@ export default function AttendancePage() {
     const [camera, setCamera] = useState(false);
     const [itemsList, setItemsList] = useState([]);
     const [currentCode, setCurentCode] = useState('');
-    const [errorMsg, seterrorMsg] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({
+      Success: true,
+      Content: ""
+    });
     const [selected, setSelected] = useState([]);
 
     const [openMessage, setOpenMessage] = useState(false);
@@ -36,8 +40,11 @@ export default function AttendancePage() {
       setOpenMessage(false);
     };
 
-    const showMessage = (msg) => {
-      seterrorMsg(msg)
+    const showMessage = (isSuccess, msg) => {
+      setMessage({
+        Success: isSuccess,
+        Content: msg
+      })
       setOpenMessage(true);
     };
 
@@ -52,7 +59,6 @@ export default function AttendancePage() {
     const handleClick = (mssv) => {
       const selectedIndex = selected.indexOf(mssv);
       let newSelected = [];
-      console.log(selectedIndex)
       if (selectedIndex === -1) {
         newSelected = newSelected.concat(selected, mssv);
         const newList = itemsList.map((item) => {
@@ -106,27 +112,28 @@ export default function AttendancePage() {
     });
 
     const Attend = () => {
+      setLoading(true)
       if (currentCode) {
         fetch(`/diemdanh/${currentCode}`).then((res) =>
           res.json().then((result) => {
             if (result.success === true)
             {
-              seterrorMsg('')
               const studentID = result.data
               if (!selected.some(s => s === studentID))
                 handleClick(studentID)
               else
-                showMessage(`Student ${studentID} attended.`)
+                showMessage(false, `Student ${studentID} attended.`)
             }
             else
-              showMessage(result.msg)
+              showMessage(result.success, result.msg)
           })
         );
       }
+      setLoading(false)
     }
 
     const handleSubmitAttend = () => {
-      console.log(itemsList)
+      setLoading(true)
       const jsonParam = {
         "classID": currentCode,
         "listStudents": itemsList
@@ -141,14 +148,16 @@ export default function AttendancePage() {
             if (result.success === true)
             {
               setOpenConfirm(false)
+              showMessage(result.success, "Submit success.")
             }
             else
             {
-              showMessage(result.msg)
+              showMessage(result.success, result.msg)
               setOpenConfirm(false)
             }
           })
         );
+      setLoading(false)
     }
 
     const refreshPage = (list) => {
@@ -174,7 +183,7 @@ export default function AttendancePage() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             Attendance
           </Typography>
-          <AppSearchAttend token={token} setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
+          <AppSearchAttend token={token} setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage} setLoading={setLoading}/> 
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Card>
@@ -251,10 +260,17 @@ export default function AttendancePage() {
         </Dialog>
 
         <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={openMessage} autoHideDuration={5000} onClose={handleCloseMessage}>
-          <Alert onClose={handleCloseMessage} variant="filled" severity="error" sx={{ width: '100%' }}>
-            {errorMsg}
+          <Alert onClose={handleCloseMessage} variant="filled" severity={message.Success ? "success" : "error"} sx={{ width: '100%' }}>
+            {message.Content}
           </Alert>
         </Snackbar>
+
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </>
     );
   }

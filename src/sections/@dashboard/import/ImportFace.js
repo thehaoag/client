@@ -5,10 +5,11 @@ import { Grid, Button } from '@mui/material';
 
 ImportStudents.propTypes = {
     showMessage: PropTypes.func,
-    token: PropTypes.object
+    token: PropTypes.object,
+    setLoading: PropTypes.func
 }; 
 
-export default function ImportStudents({token, showMessage}) {
+export default function ImportStudents({token, showMessage, setLoading}) {
 
     const [importForm, setImportForm] = useState({
         file: null,
@@ -27,6 +28,7 @@ export default function ImportStudents({token, showMessage}) {
     }
 
     const handleClick = () => {
+        setLoading(true)
         showMessage('test')
         /* const data = new FormData();
         data.append('file', importForm.file, importForm.file.name);
@@ -41,11 +43,12 @@ export default function ImportStudents({token, showMessage}) {
          fetch(`/importStudents`, requestOptions).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
-                    showMessage(result.msg)
+                    showMessage(result.success, result.msg)
                 else
-                    showMessage(result.msg)
+                    showMessage(result.success, result.msg)
             })
         ); */
+        setLoading(false)
     }
 
     return (

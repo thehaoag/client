@@ -5,10 +5,11 @@ import { Grid, Button, InputLabel, FormControl, MenuItem, Select } from "@mui/ma
 AppSearch.propTypes = {
     refreshPage: PropTypes.func,
     showMessage: PropTypes.func,
-    token:  PropTypes.object
+    token:  PropTypes.object,
+    setLoading: PropTypes.func
 };
 
-export default function AppSearch({ token, refreshPage, showMessage }) {
+export default function AppSearch({ token, refreshPage, showMessage, setLoading }) {
     
     function getYear() {
         const currentYear = new Date()
@@ -64,7 +65,7 @@ export default function AppSearch({ token, refreshPage, showMessage }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submitForm)
             }
-
+            setLoading(true)
             fetch(`/getListStudents`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
@@ -75,10 +76,13 @@ export default function AppSearch({ token, refreshPage, showMessage }) {
                     }
                     else
                     {
-                        showMessage(result.msg)
+                        showMessage(result.success, result.msg)
                     }
                 })
-            );
+            ).catch(error => {
+                showMessage(false, error)
+            });
+            setLoading(false)
         }  
     };
 
@@ -88,32 +92,32 @@ export default function AppSearch({ token, refreshPage, showMessage }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({"year": submitForm.year, "semester": submitForm.semester, "userID": token.account.id})
         }
+        setLoading(true)
+        fetch(`/loadCourseData`, requestOptions)
+            .then(res => res.json())
+            .then((result) => {
+                if (result.success === true)
+                {
+                    setResponseData(result.data)
 
-        fetch(`/loadCourseData`, requestOptions).then((res) =>
-                res.json().then((result) => {
-                    if (result.success === true)
-                    {
-                        setResponseData(result.data)
+                    const key = 'MaMH';
+                    const arrayUniqueByKey = [...new Map(result.data.map(item =>
+                        [item[key], item])).values()];
 
-                        const key = 'MaMH';
-                        const arrayUniqueByKey = [...new Map(result.data.map(item =>
-                            [item[key], item])).values()];
-
-                        setSubmitForm(prevNote => ({
-                            ...prevNote, 'maMH': ''}))
-                        setListCourse(arrayUniqueByKey)
-                        setSubmitForm(prevNote => ({
-                            ...prevNote, 'group': ''}))
-                        setListGroup([])
-                    }
-                    else
-                    {
-                        showMessage(result.msg)
-                    }
-                    
-                })
-            );
-    }, [submitForm.year, submitForm.semester, token.account.id, showMessage]);
+                    setSubmitForm(prevNote => ({
+                        ...prevNote, 'maMH': ''}))
+                    setListCourse(arrayUniqueByKey)
+                    setSubmitForm(prevNote => ({
+                        ...prevNote, 'group': ''}))
+                    setListGroup([])
+                }
+                else
+                {
+                    showMessage(result.success, result.msg)
+                }    
+            })
+        setLoading(false) 
+    }, [submitForm.year, submitForm.semester, token.account.id, showMessage, setLoading]);
 
     return (
         <Grid justifyContent="center" alignItems="center" container sx={{ mb: 2 }} spacing={2}>

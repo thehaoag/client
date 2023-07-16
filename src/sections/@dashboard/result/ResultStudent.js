@@ -5,8 +5,8 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import {
-    Card,
-    Table,
+    Card, Backdrop, 
+    Table, CircularProgress,
     Stack, Snackbar,
     Paper, Alert,
     TableRow,
@@ -58,6 +58,8 @@ ResultStudent.propTypes = {
 };
 
 export default function ResultStudent({ token }) {
+    const [loading, setLoading] = useState(false);
+
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
@@ -127,12 +129,18 @@ export default function ResultStudent({ token }) {
         }
     }
 
-    const [errorMsg, seterrorMsg] = useState('');
+    const [message, setMessage] = useState({
+        Success: true,
+        Content: ""
+    });
     const [open, setOpen] = useState(false);
   
-    const showMessage = (msg) => {
-      seterrorMsg(msg)
-      setOpen(true);
+    const showMessage = (isSuccess, msg) => {
+        setMessage({
+          Success: isSuccess,
+          Content: msg
+        })
+        setOpen(true);
     };
   
     const handleClose = () => {
@@ -150,7 +158,7 @@ export default function ResultStudent({ token }) {
                     Result of Attandance
                 </Typography>
 
-                <AppSearchClass token={token} refreshPage={refreshPage} showMessage={showMessage}/> 
+                <AppSearchClass token={token} refreshPage={refreshPage} showMessage={showMessage} setLoading={setLoading}/> 
                 
                 <Card>
                     <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
@@ -245,10 +253,17 @@ export default function ResultStudent({ token }) {
             </Container>
 
             <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
-                <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
-                    {errorMsg}
+                <Alert onClose={handleClose} variant="filled" severity={message.Success ? "success" : "error"} sx={{ width: '100%' }}>
+                    {message.Content}
                 </Alert>
             </Snackbar>
+
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </>
     )
 }
