@@ -198,7 +198,7 @@ export default function ResultTeacher({ token }) {
                         </TableCell>
 
                         {
-                          totalSessions && [...Array(totalSessions)].map((_, index) => <TableCell key={index} align="left">{sessions[index]}</TableCell>)
+                          totalSessions && [...Array(totalSessions)].map((_, index) => <TableCell key={index} align="center">{sessions[index]}</TableCell>)
                         }
 
                         <TableCell align="left">

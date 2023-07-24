@@ -192,7 +192,7 @@ export default function ResultStudent({ token }) {
                                 <TableCell align="left">{Nhom}</TableCell>
 
                                 {
-                                    session && [...Array(session)].map((_, index) => <TableCell key={index} align="left">{sessions[index]}</TableCell>)
+                                    session && [...Array(session)].map((_, index) => <TableCell key={index} align="center">{sessions[index]}</TableCell>)
                                 }
 
                                 {

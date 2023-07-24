@@ -133,7 +133,9 @@ export default function AttendancePage() {
     }
 
     const handleSubmitAttend = () => {
+      console.log(loading)
       setLoading(true)
+      console.log(loading)
       const jsonParam = {
         "classID": currentCode,
         "listStudents": itemsList
@@ -155,9 +157,12 @@ export default function AttendancePage() {
               showMessage(result.success, result.msg)
               setOpenConfirm(false)
             }
+            console.log("Done fetch API")
+            console.log(loading)
+            setLoading(false)
+            console.log(loading)
           })
         );
-      setLoading(false)
     }
 
     const refreshPage = (list) => {
@@ -165,7 +170,7 @@ export default function AttendancePage() {
         setItemsList(list)
         let listAttend = []
         listAttend = list.map(item => {
-          if (item.datesession)
+          if (item.datesession && item.datesession !== 'V')
             return item.mssv
           return null
         })
@@ -216,7 +221,7 @@ export default function AttendancePage() {
                                 </Typography>
                               </TableCell>
 
-                              <TableCell align="left">{datesession}</TableCell>    
+                              <TableCell align="center">{datesession}</TableCell>    
 
                               <TableCell padding="checkbox">
                                 <Checkbox checked={selectedUser} onChange={() => handleClick( mssv)} />
