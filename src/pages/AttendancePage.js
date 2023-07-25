@@ -126,16 +126,16 @@ export default function AttendancePage() {
             }
             else
               showMessage(result.success, result.msg)
+            setLoading(false)
           })
         );
       }
-      setLoading(false)
+      
     }
 
     const handleSubmitAttend = () => {
-      console.log(loading)
+      setOpenConfirm(false)
       setLoading(true)
-      console.log(loading)
       const jsonParam = {
         "classID": currentCode,
         "listStudents": itemsList
@@ -148,19 +148,12 @@ export default function AttendancePage() {
       fetch(`/submitAttended`,requestOptions).then((res) =>
           res.json().then((result) => {
             if (result.success === true)
-            {
-              setOpenConfirm(false)
               showMessage(result.success, "Submit success.")
-            }
+            
             else
-            {
               showMessage(result.success, result.msg)
-              setOpenConfirm(false)
-            }
-            console.log("Done fetch API")
-            console.log(loading)
+            
             setLoading(false)
-            console.log(loading)
           })
         );
     }
@@ -188,7 +181,7 @@ export default function AttendancePage() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             Attendance
           </Typography>
-          <AppSearchAttend token={token} setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage} setLoading={setLoading}/> 
+          <AppSearchAttend token={token} setCurentCode={setCurentCode} refreshPage={refreshPage} showMessage={showMessage}/> 
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Card>

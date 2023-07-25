@@ -72,9 +72,10 @@ export default function ImportCourse({token, showMessage, setLoading}) {
                     showMessage(result.success, result.msg)
                 else
                     showMessage(result.success, result.msg)
+                setLoading(false)
             })
         );
-        setLoading(false)
+        
     }
 
     return (

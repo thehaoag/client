@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
-import { Grid, Button, InputLabel, FormControl, MenuItem, Select } from "@mui/material";
+import { Grid, Button, InputLabel, FormControl, MenuItem, Select, Backdrop, CircularProgress } from "@mui/material";
 
 AppSearchClass.propTypes = {
     refreshPage: PropTypes.func,
     showMessage: PropTypes.func,
-    token:  PropTypes.object,
-    setLoading: PropTypes.func
+    token:  PropTypes.object
 };
 
-export default function AppSearchClass({ token, refreshPage, showMessage, setLoading}) {
+export default function AppSearchClass({ token, refreshPage, showMessage}) {
     
     function getYear() {
         const currentYear = new Date()
@@ -33,6 +32,8 @@ export default function AppSearchClass({ token, refreshPage, showMessage, setLoa
                 return 1
         }
     }
+
+    const [loading, setLoading] = useState(false);
 
     const [submitForm, setSubmitForm] = useState({
         year: getYear(),
@@ -65,66 +66,77 @@ export default function AppSearchClass({ token, refreshPage, showMessage, setLoa
                     else
                     {
                         showMessage(result.success, result.msg)
+                        refreshPage([])
                     }
+                    setLoading(false)
                 })
             );
-            setLoading(false)
+            
         }  
     };
 
     return (
-        <Grid container sx={{ mb: 2 }} spacing={2}>
-            <Grid item xs={12} sm={6} md={2}>
-                <FormControl sx={{ width: '100%' }} size="small">
-                    <InputLabel id="lbYear">Year</InputLabel>
-                    <Select
-                        labelId="lbYear"
-                        id="inputYear"
-                        value={submitForm.year}
-                        name="year"
-                        label="Year"
-                        onChange={handleChange}
-                    >
-                        {
-                            [...Array(3)].map((item, index) => {
-                                const currentDate = new Date()
-                                let sYear = currentDate.getFullYear() - (2-index)
-                                if (currentDate.getMonth() > 7)
-                                    sYear = currentDate.getFullYear()+1 - (2-index)
+        <>
+            <Grid container sx={{ mb: 2 }} spacing={2}>
+                <Grid item xs={12} sm={6} md={2}>
+                    <FormControl sx={{ width: '100%' }} size="small">
+                        <InputLabel id="lbYear">Year</InputLabel>
+                        <Select
+                            labelId="lbYear"
+                            id="inputYear"
+                            value={submitForm.year}
+                            name="year"
+                            label="Year"
+                            onChange={handleChange}
+                        >
+                            {
+                                [...Array(3)].map((item, index) => {
+                                    const currentDate = new Date()
+                                    let sYear = currentDate.getFullYear() - (2-index)
+                                    if (currentDate.getMonth() > 7)
+                                        sYear = currentDate.getFullYear()+1 - (2-index)
 
-                                return (
-                                    <MenuItem key={index} value={sYear}>{sYear-1}-{sYear}</MenuItem>
-                                )
-                            })
-                        }
-                        
-                    </Select>
-                </FormControl>
+                                    return (
+                                        <MenuItem key={index} value={sYear}>{sYear-1}-{sYear}</MenuItem>
+                                    )
+                                })
+                            }
+                            
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <FormControl sx={{ width: '100%' }} size="small">
+                        <InputLabel id="lbSemester">Semester</InputLabel>
+                        <Select
+                            labelId="lbSemester"
+                            id="inputSemester"
+                            name="semester"
+                            value={submitForm.semester}
+                            label="Semester"
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={1}>Semester 1</MenuItem>
+                            <MenuItem value={2}>Semester 2</MenuItem>
+                            <MenuItem value={3}>Summer Semester</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={1} alignItems={"center"}>
+                    <Button variant="contained" disabled = {submitForm.year === 0 || submitForm.semester === 0} 
+                        onClick={handleClick}>
+                            Submit
+                    </Button>
+                </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-                <FormControl sx={{ width: '100%' }} size="small">
-                    <InputLabel id="lbSemester">Semester</InputLabel>
-                    <Select
-                        labelId="lbSemester"
-                        id="inputSemester"
-                        name="semester"
-                        value={submitForm.semester}
-                        label="Semester"
-                        onChange={handleChange}
-                    >
-                        <MenuItem value={1}>Semester 1</MenuItem>
-                        <MenuItem value={2}>Semester 2</MenuItem>
-                        <MenuItem value={3}>Summer Semester</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={1} alignItems={"center"}>
-                <Button variant="contained" disabled = {submitForm.year === 0 || submitForm.semester === 0} 
-                    onClick={handleClick}>
-                        Submit
-                </Button>
-            </Grid>
-        </Grid>
+
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+        </>
     );
 }

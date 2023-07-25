@@ -5,8 +5,8 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import {
-  Card, Backdrop,
-  Table, CircularProgress,
+  Card, 
+  Table, 
   Stack, Snackbar,
   Paper, Alert,
   TableRow,
@@ -60,7 +60,6 @@ ResultTeacher.propTypes = {
 };
 
 export default function ResultTeacher({ token }) {
-  const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(0);
 
@@ -166,7 +165,7 @@ export default function ResultTeacher({ token }) {
           Result of Attandance
         </Typography>
 
-        <AppSearch token={token} refreshPage={refreshPage} showMessage={showMessage} setLoading={setLoading}/> 
+        <AppSearch token={token} refreshPage={refreshPage} showMessage={showMessage}/> 
         
         <Card>
           <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
@@ -259,13 +258,6 @@ export default function ResultTeacher({ token }) {
           {message.Content}
         </Alert>
       </Snackbar>
-
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </>
   );
 }

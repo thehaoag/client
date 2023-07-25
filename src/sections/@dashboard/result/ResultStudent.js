@@ -5,8 +5,8 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import {
-    Card, Backdrop, 
-    Table, CircularProgress,
+    Card,  
+    Table, 
     Stack, Snackbar,
     Paper, Alert,
     TableRow,
@@ -58,7 +58,6 @@ ResultStudent.propTypes = {
 };
 
 export default function ResultStudent({ token }) {
-    const [loading, setLoading] = useState(false);
 
     const [page, setPage] = useState(0);
 
@@ -122,8 +121,13 @@ export default function ResultStudent({ token }) {
 
     const refreshPage = (list) => {
         if (list && list.length > 0) {
-            console.log(list)
             setListClasses(list)
+            setPage(0)
+            setRowsPerPage(5)
+        }
+        else
+        {
+            setListClasses([])
             setPage(0)
             setRowsPerPage(5)
         }
@@ -158,7 +162,7 @@ export default function ResultStudent({ token }) {
                     Result of Attandance
                 </Typography>
 
-                <AppSearchClass token={token} refreshPage={refreshPage} showMessage={showMessage} setLoading={setLoading}/> 
+                <AppSearchClass token={token} refreshPage={refreshPage} showMessage={showMessage} /> 
                 
                 <Card>
                     <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
@@ -258,12 +262,6 @@ export default function ResultStudent({ token }) {
                 </Alert>
             </Snackbar>
 
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={loading}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
         </>
     )
 }
