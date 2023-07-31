@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 // @mui
 import { Grid, Button } from '@mui/material';
 
-ImportStudents.propTypes = {
+ImportFace.propTypes = {
     showMessage: PropTypes.func,
     token: PropTypes.object,
     setLoading: PropTypes.func
 }; 
 
-export default function ImportStudents({token, showMessage, setLoading}) {
+export default function ImportFace({token, showMessage, setLoading}) {
 
     const [importForm, setImportForm] = useState({
         file: null,
@@ -29,8 +29,8 @@ export default function ImportStudents({token, showMessage, setLoading}) {
 
     const handleClick = () => {
         setLoading(true)
-        showMessage('test')
-        /* const data = new FormData();
+
+        const data = new FormData();
         data.append('file', importForm.file, importForm.file.name);
         data.append("createBy", importForm.createBy)
         data.append("createByName", importForm.createByName)
@@ -40,15 +40,33 @@ export default function ImportStudents({token, showMessage, setLoading}) {
             body: data
         }
 
-         fetch(`/importStudents`, requestOptions).then((res) =>
+        fetch(`/importFaces`, requestOptions).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
                     showMessage(result.success, result.msg)
                 else
                     showMessage(result.success, result.msg)
+                
+                setLoading(false)
             })
-        ); */
-        setLoading(false)
+        ); 
+        
+    }
+
+    const handleClickRetrain = () => {
+        setLoading(true)
+
+        fetch(`/retrainModel`).then((res) =>
+            res.json().then((result) => {
+                if (result.success === true)
+                    showMessage(result.success, result.msg)
+                else
+                    showMessage(result.success, result.msg)
+                
+                setLoading(false)
+            })
+        ); 
+        
     }
 
     return (
@@ -57,11 +75,15 @@ export default function ImportStudents({token, showMessage, setLoading}) {
                 <input accept='.zip,.rar' 
                     type='file' name='file' onChange={handleChange}/>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={5}>
                 <Button variant="contained" 
                     disabled = {importForm.file === null || importForm.file === ''} 
                     onClick={handleClick}>
                         Import
+                </Button>
+                <Button sx={{ ml:2 }} variant="contained" 
+                    onClick={handleClickRetrain}>
+                        Re-train
                 </Button>
             </Grid>
         </Grid>
