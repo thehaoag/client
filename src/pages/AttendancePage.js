@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import Webcam from 'react-webcam'
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -114,13 +115,28 @@ export default function AttendancePage() {
     const Attend = () => {
       setLoading(true)
       if (currentCode) {
-        fetch(`/diemdanh/${currentCode}`).then((res) =>
+
+        const image = webRef.current.getScreenshot()
+
+        const request = new FormData();
+        request.append('code', currentCode)
+        request.append('file', image)
+        
+        const requestOptions = {
+            method: 'POST',
+            body: request
+        }
+        
+        fetch(`/diemdanh`, requestOptions).then((res) =>
           res.json().then((result) => {
             if (result.success === true)
             {
               const studentID = result.data
               if (!selected.some(s => s === studentID))
+              {
                 handleClick(studentID)
+                showMessage(true, result.msg)
+              }
               else
                 showMessage(false, `Student ${studentID} attended.`)
             }
@@ -171,6 +187,8 @@ export default function AttendancePage() {
       }
     }
 
+    const webRef = useRef(null);
+
     return (
       <>
         <Helmet>
@@ -186,7 +204,11 @@ export default function AttendancePage() {
             <Grid item xs={12} md={6} lg={8}>
               <Card>
                 <Box sx={{ p: 1 }} dir="ltr">
-                    <StyledProductImg alt='camera-on' src={camera ? 'http://localhost:5000/video' :`/assets/images/camera-notload.jpeg` }/>
+                  {
+                    camera
+                    ? <Webcam mirrored="true" screenshotFormat="image/jpeg" width={"100%"} ref={webRef}/>
+                    : <StyledProductImg alt='camera-off' src={`/assets/images/camera-notload.jpeg`}/>
+                  }
                 </Box>
 
                 <Box sx={{ m: 2, mt: 1, textAlign: 'center'}} dir="ltr">
@@ -234,7 +256,7 @@ export default function AttendancePage() {
 
           </Grid>
         </Container>
-
+        
         <Dialog
           open={openConfirm}
           onClose={handleCloseConfirm}
