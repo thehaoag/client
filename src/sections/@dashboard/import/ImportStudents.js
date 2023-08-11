@@ -51,6 +51,21 @@ export default function ImportStudents({token, showMessage, setLoading}) {
         );
     }
 
+    const handleClickFace = () => {
+        setLoading(true)
+
+        fetch(`/testRemoveFace`).then((res) =>
+            res.json().then((result) => {
+                if (result.success === true)
+                    showMessage(result.success, result.msg)
+                else
+                    showMessage(result.success, result.msg)
+                
+                setLoading(false)
+            })
+        ); 
+    }
+
     return (
         <Grid justifyContent="center" alignItems="center" sx={{ mb: 3, mt: 1 }} container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -62,6 +77,10 @@ export default function ImportStudents({token, showMessage, setLoading}) {
                     disabled = {importForm.file === null || importForm.file === ''} 
                     onClick={handleClick}>
                         Import
+                </Button>
+                <Button sx={{ ml:1 }} variant="contained" 
+                    onClick={handleClickFace}>
+                        Remove
                 </Button>
             </Grid>
         </Grid>
