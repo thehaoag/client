@@ -46,9 +46,11 @@ export default function LoginForm() {
       body: JSON.stringify(loginForm)
     }
     fetch(`/login`, requestOptions)
-      .then((res) => res.html()
+      .then((res) => {
+        console.log(res)
+        res.json()
+      })
       .then((result) => {
-        console.log(result)
         if (result.success)
         {
           setToken(result)
@@ -59,7 +61,7 @@ export default function LoginForm() {
           showMessage(result.success, result.msg)
         }
         
-      }));
+      });
   };
 
   const handleChange = (event) => { 
