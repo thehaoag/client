@@ -46,10 +46,7 @@ export default function LoginForm() {
       body: JSON.stringify(loginForm)
     }
     fetch(`/login`, requestOptions)
-      .then((res) => {
-        console.log(res)
-        res.json()
-      })
+      .then((res) => res.json()
       .then((result) => {
         if (result.success)
         {
@@ -61,7 +58,7 @@ export default function LoginForm() {
           showMessage(result.success, result.msg)
         }
         
-      });
+      }));
   };
 
   const handleChange = (event) => { 
