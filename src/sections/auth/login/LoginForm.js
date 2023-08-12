@@ -46,8 +46,9 @@ export default function LoginForm() {
       body: JSON.stringify(loginForm)
     }
     fetch(`/login`, requestOptions)
-      .then((res) => res.json()
+      .then((res) => res.html()
       .then((result) => {
+        console.log(result)
         if (result.success)
         {
           setToken(result)
