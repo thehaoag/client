@@ -214,7 +214,7 @@ export default function AttendancePage() {
 
                 <Box sx={{ m: 2, mt: 1, textAlign: 'center'}} dir="ltr">
                   <Button disabled={currentCode === ''} variant="contained" sx={{ mr: 2}} onClick={() => setCamera(!camera)}>On/Off</Button>
-                  <Button disabled={currentCode === ''} variant="contained" onClick={Attend}>Attendance</Button>
+                  <Button disabled={!camera} variant="contained" onClick={Attend}>Attendance</Button>
                 </Box>
               </Card>
             </Grid>
