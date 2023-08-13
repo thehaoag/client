@@ -45,7 +45,7 @@ export default function LoginForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
     }
-    fetch(`/login`, requestOptions)
+    fetch(`/manualload`, requestOptions)
       .then((res) => res.json()
       .then((result) => {
         if (result.success)
