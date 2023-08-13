@@ -69,7 +69,8 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submitForm)
             }
-            fetch(`/getListStudents_Attend`, requestOptions).then((res) =>
+            const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+            fetch(`${rootUrl}/getListStudents_Attend`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
                     {
@@ -96,7 +97,8 @@ export default function AppSearchAttend({ token, setCurentCode, refreshPage, sho
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({"year": submitForm.year, "semester": submitForm.semester, "userID": token.account.id})
         }
-        fetch(`/loadCourseData`, requestOptions).then((res) =>
+        const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+        fetch(`${rootUrl}/loadCourseData`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
                     {

@@ -56,7 +56,8 @@ export default function AppSearchClass({ token, refreshPage, showMessage}) {
                 body: JSON.stringify(submitForm)
             }
             setLoading(true)
-            fetch(`/getListClass`, requestOptions).then((res) =>
+            const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+            fetch(`${rootUrl}/getListClass`, requestOptions).then((res) =>
                 res.json().then((result) => {
                     if (result.success === true)
                     {

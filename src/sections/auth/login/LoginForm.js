@@ -45,7 +45,8 @@ export default function LoginForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
     }
-    fetch(`/manualload`, requestOptions)
+    const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+    fetch(`${rootUrl}/login`, requestOptions)
       .then((res) => res.json()
       .then((result) => {
         if (result.success)

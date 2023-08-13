@@ -39,8 +39,8 @@ export default function ImportFace({token, showMessage, setLoading}) {
             method: 'POST',
             body: data
         }
-
-        fetch(`/importFaces`, requestOptions).then((res) =>
+        const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+        fetch(`${rootUrl}/importFaces`, requestOptions).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
                     showMessage(result.success, result.msg)
@@ -55,8 +55,8 @@ export default function ImportFace({token, showMessage, setLoading}) {
 
     const handleClickRetrain = () => {
         setLoading(true)
-
-        fetch(`/retrainModel`).then((res) =>
+        const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+        fetch(`${rootUrl}/retrainModel`).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
                     showMessage(result.success, result.msg)

@@ -126,8 +126,8 @@ export default function AttendancePage() {
             method: 'POST',
             body: request
         }
-        
-        fetch(`/diemdanh`, requestOptions).then((res) =>
+        const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+        fetch(`${rootUrl}/diemdanh`, requestOptions).then((res) =>
           res.json().then((result) => {
             if (result.success === true)
             {
@@ -161,7 +161,8 @@ export default function AttendancePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(jsonParam)
       }
-      fetch(`/submitAttended`,requestOptions).then((res) =>
+      const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+      fetch(`${rootUrl}/submitAttended`,requestOptions).then((res) =>
           res.json().then((result) => {
             if (result.success === true)
               showMessage(result.success, "Submit success.")

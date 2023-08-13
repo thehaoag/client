@@ -27,7 +27,8 @@ export default function AccountPopover() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     }
-    fetch(`/logout`, requestOptions)
+    const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+    fetch(`${rootUrl}/logout`, requestOptions)
       .then((res) => res.json()
       .then(() => {
         removeToken()

@@ -37,7 +37,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://app-regconize-tdt.onrender.com/",
+  "proxy": "https://thehaoag.pythonanywhere.com/",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",

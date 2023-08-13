@@ -66,7 +66,8 @@ export default function ImportCourse({token, showMessage, setLoading}) {
             body: data
         }
         setLoading(true)
-        fetch(`/importCourse`, requestOptions).then((res) =>
+        const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
+        fetch(`${rootUrl}/importCourse`, requestOptions).then((res) =>
             res.json().then((result) => {
                 if (result.success === true)
                     showMessage(result.success, result.msg)
