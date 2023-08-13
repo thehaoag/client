@@ -46,7 +46,7 @@ export default function LoginForm() {
       body: JSON.stringify(loginForm)
     }
     fetch(`/login`, requestOptions)
-      .then((res) => {
+      .then(res => {
         console.log(res.ok)
         console.log(res)
         console.log(res.status)
