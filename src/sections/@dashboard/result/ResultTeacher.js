@@ -157,7 +157,7 @@ export default function ResultTeacher({ token }) {
   return (
     <>
       <Helmet>
-        <title> Result of Attandance | Minimal UI </title>
+        <title> Result of Attandance | TDTU </title>
       </Helmet>
 
       <Container>

@@ -193,7 +193,7 @@ export default function AttendancePage() {
     return (
       <>
         <Helmet>
-          <title> Attendance | Minimal UI </title>
+          <title> Attendance TDTU </title>
         </Helmet>
         
         <Container maxWidth="xl">

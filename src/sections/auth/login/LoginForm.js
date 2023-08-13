@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Stack, IconButton, InputAdornment, TextField, Snackbar, Alert } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField, Snackbar, Alert, Backdrop, CircularProgress } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
@@ -13,7 +13,7 @@ export default function LoginForm() {
 
   const { setToken } = useToken()
   const navigate = useNavigate()
-
+  const [loading, setLoading] = useState(false);
   const [loginForm, setloginForm] = useState({
     user: "",
     password: ""
@@ -45,10 +45,12 @@ export default function LoginForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
     }
+    setLoading(true)
     const rootUrl = process.env.NODE_ENV === "production" ? "https://thehaoag.pythonanywhere.com" : ""
     fetch(`${rootUrl}/login`, requestOptions)
       .then((res) => res.json()
       .then((result) => {
+        setLoading(false)
         if (result.success)
         {
           setToken(result)
@@ -96,10 +98,17 @@ export default function LoginForm() {
       </LoadingButton>
 
       <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={open} autoHideDuration={5000} onClose={handleClose}>
-          <Alert onClose={handleClose} variant="filled" severity={message.Success ? "success" : "error"} sx={{ width: '100%' }}>
-            {message.Content}
-          </Alert>
-        </Snackbar>
+        <Alert onClose={handleClose} variant="filled" severity={message.Success ? "success" : "error"} sx={{ width: '100%' }}>
+          {message.Content}
+        </Alert>
+      </Snackbar>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

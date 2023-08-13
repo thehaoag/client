@@ -34,7 +34,7 @@ export default function ImportPage() {
     return (
         <>
             <Helmet>
-                <title> Import Data | Minimal UI </title>
+                <title> Import Data | TDTU </title>
             </Helmet>
 
             <Container>
