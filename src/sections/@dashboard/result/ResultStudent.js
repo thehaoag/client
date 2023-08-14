@@ -48,7 +48,7 @@ function descendingComparator(a, b, orderBy) {
       return a[1] - b[1];
     });
     if (query) {
-      return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+      return filter(array, (_user) => _user.TenMH.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
   }
@@ -113,11 +113,11 @@ export default function ResultStudent({ token }) {
       setFilterName(event.target.value);
     };
 
-    const emptyRows = Math.max(0, (1 + page) * rowsPerPage - listClasses.length);
-
     const filteredUsers = applySortFilter(listClasses, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
+
+    const emptyRows = !isNotFound ? Math.max(0, (1 + page) * rowsPerPage - listClasses.length) : 0;
 
     const refreshPage = (list) => {
         if (list && list.length > 0) {
@@ -157,7 +157,7 @@ export default function ResultStudent({ token }) {
                 <title> Result of Attandance | TDTU </title>
             </Helmet>
 
-            <Container>
+            <Container maxWidth="xl">
                 <Typography variant="h4" sx={{ mb: 2 }} gutterBottom>
                     Result of Attandance
                 </Typography>

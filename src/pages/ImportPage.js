@@ -37,7 +37,7 @@ export default function ImportPage() {
                 <title> Import Data | TDTU </title>
             </Helmet>
 
-            <Container>
+            <Container maxWidth="xl">
                 <Typography variant="h4" sx={{ mb: 2 }}>
                     Import Data
                 </Typography>

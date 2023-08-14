@@ -114,11 +114,11 @@ export default function ResultTeacher({ token }) {
   ]);
   const [totalSessions, setSessions] = useState(15)
 
-  const emptyRows = Math.max(0, (1 + page) * rowsPerPage - listStudents.length);
-
   const filteredUsers = applySortFilter(listStudents, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
+
+  const emptyRows = !isNotFound ? Math.max(0, (1 + page) * rowsPerPage - listStudents.length) : 0;
 
   const refreshPage = (sessions, list) => {
     if (list && list.length > 0) {
@@ -160,7 +160,7 @@ export default function ResultTeacher({ token }) {
         <title> Result of Attandance | TDTU </title>
       </Helmet>
 
-      <Container>
+      <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 2 }} gutterBottom>
           Result of Attandance
         </Typography>
